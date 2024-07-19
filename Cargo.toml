@@ -12,7 +12,7 @@ path = "src/lib.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-winit = {version="0.30.4", default-features=false }
+winit = {version="0.28.6", default-features=false }
 mobile-entry-point = "0.1.1"
 ambient_app = {path = "../Ambient/crates/app"}
 ambient = {path = "crates/app"}
