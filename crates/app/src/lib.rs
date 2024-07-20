@@ -61,48 +61,62 @@ pub fn new_main(eventloop:EventLoop<()>,android_app:AndroidApp){
 use glam::{uvec2};
 static mut QUIT:bool = false;
 static mut LOADED:bool = false;
-#[cfg(target_os="ios")]
-pub fn new(){
-    let mut rt = ambient_sys::task::make_native_multithreaded_runtime().unwrap();
-
-    let runtime = rt.handle();
-    let assets: AssetCache = AssetCache::new(runtime.clone());
-    let _settings = SettingsKey.get(&assets);
-    //box_c();
-    let in_size: winit::dpi::PhysicalSize<u32> = self.window.clone().unwrap().inner_size();
-    let width = in_size.width;
-    let height = in_size.height;
-    let headless = Some(uvec2(width, height));
-    let scale_factor = self
-    .window
-    .as_ref()
-    .map(|x| x.scale_factor() as f32)
-    .unwrap_or(1.) as f64;
-    tracing::info!("scale_factor {:?}",scale_factor);
-    rt.block_on(async move {
-        let mut app = AppBuilder::new()
-            .ui_renderer(true)
-            .with_asset_cache(assets)
-            .headless(headless)
-            .update_title_with_fps_stats(false)
-            .build(window).await.unwrap();
-
-        *app.world.resource_mut(window_scale_factor()) = scale_factor;
-
-        i_c.call(&mut app,android_app_c).await;
-        *app_.lock() = Some(app);
-        unsafe{
-            LOADED = true;
+use std::sync::Arc;
+pub struct IosApp{
+    window: Arc<window>
+}
+impl IosApp{
+    pub fn new()->IosApp{
+        let event_loop = EventLoop::new();
+        let window = WindowBuilder::new();
+        let window = window.build(&event_loop).unwrap();
+        IosApp{
+            window:Arc::new(window)
         }
-        //use tokio::time::{sleep, Duration};
-        let quit = unsafe{
-            QUIT
-        };
-        use std::time::{Duration};
-        use std::thread::sleep;
-        loop{
-            sleep(Duration::new(5,0));
+    }
+    pub fn run(&mut self,init: impl for<'x> AsyncInitAndroid<'x>  +Copy+ Clone+Send+'static){
+        let mut rt = ambient_sys::task::make_native_multithreaded_runtime().unwrap();
 
-        }
-    });
+        let runtime = rt.handle();
+        let assets: AssetCache = AssetCache::new(runtime.clone());
+        let _settings = SettingsKey.get(&assets);
+        //box_c();
+        let i_c = init.clone();
+        let in_size: winit::dpi::PhysicalSize<u32> = self.window.clone().unwrap().inner_size();
+        let width = in_size.width;
+        let height = in_size.height;
+        let headless = Some(uvec2(width, height));
+        let scale_factor = self
+        .window
+        .as_ref()
+        .map(|x| x.scale_factor() as f32)
+        .unwrap_or(1.) as f64;
+        tracing::info!("scale_factor {:?}",scale_factor);
+        rt.block_on(async move {
+            let mut app = AppBuilder::new()
+                .ui_renderer(true)
+                .with_asset_cache(assets)
+                .headless(headless)
+                .update_title_with_fps_stats(false)
+                .build(window).await.unwrap();
+
+            *app.world.resource_mut(window_scale_factor()) = scale_factor;
+
+            i_c.call(&mut app,android_app_c).await;
+            *app_.lock() = Some(app);
+            unsafe{
+                LOADED = true;
+            }
+            //use tokio::time::{sleep, Duration};
+            let quit = unsafe{
+                QUIT
+            };
+            use std::time::{Duration};
+            use std::thread::sleep;
+            loop{
+                sleep(Duration::new(5,0));
+
+            }
+        });
+    }
 }

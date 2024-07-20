@@ -5,9 +5,10 @@ use ambient;
 pub extern "C" fn main() {
     //let event_loop = EventLoopBuilder::new().build();
     // let window = WindowBuilder::new().build(&event_loop).unwrap();
-    
+
     // event_loop.run(move |event, _, _| {
     //     println!("{:?}", event);
     // });
-    ambient::run();
+    let mut app = ambient::IosApp::new();
+    app.run(ambient::client::init);
 }
