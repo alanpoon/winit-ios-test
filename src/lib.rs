@@ -10,5 +10,7 @@ pub extern "C" fn main() {
     //     println!("{:?}", event);
     // });
     let mut app = ambient::IosApp::new();
-    app.run(ambient::client::init);
+    app.run(ambient::client::init,Box::new(||{
+        ambient::shared::components::init().unwrap();
+    }));
 }

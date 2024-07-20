@@ -7,7 +7,7 @@ use ambient_native_std::{
 use ambient_settings::SettingsKey;
 
 pub mod client;
-mod shared;
+pub mod shared;
 
 use ambient_physics::physx::PhysicsKey;
 use anyhow::Context;
@@ -74,13 +74,13 @@ impl IosApp{
             window:Arc::new(window)
         }
     }
-    pub fn run(&mut self,init: impl for<'x> AsyncInitAndroid<'x>  +Copy+ Clone+Send+'static){
+    pub fn run(&mut self,init: impl for<'x> AsyncInitAndroid<'x>  +Copy+ Clone+Send+'static,box_c:Box<dyn Fn()>){
         let mut rt = ambient_sys::task::make_native_multithreaded_runtime().unwrap();
 
         let runtime = rt.handle();
         let assets: AssetCache = AssetCache::new(runtime.clone());
         let _settings = SettingsKey.get(&assets);
-        //box_c();
+        box_c();
         let i_c = init.clone();
         let in_size: winit::dpi::PhysicalSize<u32> = self.window.clone().unwrap().inner_size();
         let width = in_size.width;
