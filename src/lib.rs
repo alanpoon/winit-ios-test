@@ -9,6 +9,7 @@ pub extern "C" fn main() {
     // event_loop.run(move |event, _, _| {
     //     println!("{:?}", event);
     // });
+    println!("start....");
     let mut app = ambient::IosApp::new();
     app.run(ambient::client::init,Box::new(||{
         ambient::shared::components::init().unwrap();

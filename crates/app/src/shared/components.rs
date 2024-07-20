@@ -1,4 +1,4 @@
-pub(crate) fn init() -> anyhow::Result<()> {
+pub fn init() -> anyhow::Result<()> {
     ambient_app::init_all_components();
     ambient_network::init_all_components();
     ambient_physics::init_all_components();

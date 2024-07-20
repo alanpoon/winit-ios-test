@@ -62,8 +62,12 @@ use glam::{uvec2};
 static mut QUIT:bool = false;
 static mut LOADED:bool = false;
 use std::sync::Arc;
+use ambient_core::window::window_scale_factor;
+use ambient_app::{AsyncInit,AppBuilder};
+use winit::window::WindowBuilder;
+use winit::window::Window;
 pub struct IosApp{
-    window: Arc<window>
+    window: Option<Arc<Window>>
 }
 impl IosApp{
     pub fn new()->IosApp{
@@ -71,10 +75,10 @@ impl IosApp{
         let window = WindowBuilder::new();
         let window = window.build(&event_loop).unwrap();
         IosApp{
-            window:Arc::new(window)
+            window:Some(Arc::new(window))
         }
     }
-    pub fn run(&mut self,init: impl for<'x> AsyncInitAndroid<'x>  +Copy+ Clone+Send+'static,box_c:Box<dyn Fn()>){
+    pub fn run(&mut self,init: impl for<'x> AsyncInit<'x>  +Copy+ Clone+Send+'static,box_c:Box<dyn Fn()>){
         let mut rt = ambient_sys::task::make_native_multithreaded_runtime().unwrap();
 
         let runtime = rt.handle();
@@ -92,6 +96,7 @@ impl IosApp{
         .map(|x| x.scale_factor() as f32)
         .unwrap_or(1.) as f64;
         tracing::info!("scale_factor {:?}",scale_factor);
+        let window = self.window.clone();
         rt.block_on(async move {
             let mut app = AppBuilder::new()
                 .ui_renderer(true)
@@ -102,8 +107,8 @@ impl IosApp{
 
             *app.world.resource_mut(window_scale_factor()) = scale_factor;
 
-            i_c.call(&mut app,android_app_c).await;
-            *app_.lock() = Some(app);
+            i_c.call(&mut app).await;
+            //*app_.lock() = Some(app);
             unsafe{
                 LOADED = true;
             }
