@@ -21,7 +21,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        start_app()
+
         return true
+    }
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        // Call your custom function when the app becomes active
+         start_app()
     }
 }
