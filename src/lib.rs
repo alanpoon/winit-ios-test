@@ -12,6 +12,7 @@ pub extern "C" fn main() {
 
     impl ApplicationHandler for App {
         fn resumed(&mut self, event_loop: &ActiveEventLoop) {
+            println!("resumed");
             event_loop.set_control_flow(ControlFlow::Wait);
         }
         fn window_event(&mut self, event_loop: &ActiveEventLoop, id: WindowId, event: WindowEvent) {}
