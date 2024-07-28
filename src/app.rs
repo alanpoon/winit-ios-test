@@ -47,9 +47,9 @@ impl App {
     async fn new() -> Self {
         let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
             backends: if cfg!(not(target_os = "android")) {
-                wgpu::Backends::all()
+                wgpu::Backends::METAL
             } else {
-                wgpu::Backends::GL
+                wgpu::Backends::METAL
             },
             dx12_shader_compiler: wgpu::Dx12Compiler::Dxc {
                 dxc_path: None,
@@ -73,8 +73,8 @@ impl App {
             .request_device(
                 &wgpu::DeviceDescriptor {
                     label: None,
-                    required_features: wgpu::Features::empty(),
-                    required_limits:limits,
+                    required_features: adapter.features(),
+                    required_limits:adapter.limits(),
                     memory_hints:wgpu::MemoryHints::Performance
                 },
                 None,
@@ -135,13 +135,16 @@ impl App {
         });
     }
 
-    fn setup_swapchain(&mut self, size: PhysicalSize<u32>) {
+    fn setup_swapchain(&mut self, size: PhysicalSize<u32>,scale_factor:f64) {
+        println!("size {:?} scale_factor {:?}",size, scale_factor);
         let surface_state = self.surface_state.as_ref().unwrap();
         let surface_configuration = SurfaceConfiguration {
             usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
             format: surface_state.view_format,
-            width: size.width,
-            height: size.height,
+            width:size.width,
+            //width: size.width * scale_factor as u32,
+            //height: size.height ,
+            height:2048,
             present_mode: PresentMode::Fifo,
             alpha_mode: surface_state.alpha_mode,
             view_formats: vec![surface_state.view_format],
@@ -163,7 +166,7 @@ impl App {
             alpha_mode: cap.alpha_modes[0],
         });
 
-        self.setup_swapchain(window.inner_size());
+        self.setup_swapchain(window.inner_size(),window.scale_factor());
         pollster::block_on(self.create_renderer());
     }
 
@@ -172,8 +175,8 @@ impl App {
         self.surface_state.take();
     }
 
-    fn resize(&mut self, window_size: PhysicalSize<u32>) {
-        self.setup_swapchain(window_size);
+    fn resize(&mut self, window_size: PhysicalSize<u32>,scale_factor:f64) {
+        self.setup_swapchain(window_size, scale_factor);
     }
 
     fn render(&mut self) {
@@ -226,13 +229,17 @@ pub fn run<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>) 
             } => {
                 debug!("resized");
                 if *once.lock().unwrap(){
-                    app.resize(size);
+                    app.resize(size,window.scale_factor());
                 }
             }
             Event::Resumed => {
                 debug!("resumed");
-
-                app.resumed(window.clone());
+                println!("resumed");
+                if !*once.lock().unwrap(){
+                    app.resumed(window.clone());
+                    app.render();
+                }
+                
                 *once.lock().unwrap() = true;
             }
             Event::Suspended => {
@@ -245,6 +252,7 @@ pub fn run<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>) 
                 ..
             } => {
                 debug!("main events cleared");
+                println!("main events cleared");
                 if *once.lock().unwrap(){
                     app.render();
                 }
@@ -254,6 +262,7 @@ pub fn run<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>) 
                 ..
             } => {
                 debug!("quit");
+                println!("quit");
                 event_loop.exit();
             }
             e => {
