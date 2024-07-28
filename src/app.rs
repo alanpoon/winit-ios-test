@@ -217,6 +217,7 @@ impl App {
 
 pub fn run<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>) {
     let mut app = pollster::block_on(App::new());
+    let mut once = Arc::new(std::sync::Mutex::new(false));
     let _ = event_loop.run(move |event, event_loop| {
         match event {
             Event::WindowEvent {
@@ -224,13 +225,15 @@ pub fn run<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>) 
                 ..
             } => {
                 debug!("resized");
-
-                app.resize(size);
+                if *once.lock().unwrap(){
+                    app.resize(size);
+                }
             }
             Event::Resumed => {
                 debug!("resumed");
 
                 app.resumed(window.clone());
+                *once.lock().unwrap() = true;
             }
             Event::Suspended => {
                 debug!("suspended");
@@ -242,8 +245,9 @@ pub fn run<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>) 
                 ..
             } => {
                 debug!("main events cleared");
-
-                app.render();
+                if *once.lock().unwrap(){
+                    app.render();
+                }
             }
             Event::WindowEvent {
                 event: WindowEvent::CloseRequested,
