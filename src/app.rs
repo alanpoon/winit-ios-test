@@ -8,7 +8,7 @@ use winit::{
 };
 use winit::dpi::PhysicalSize;
 use raw_window_handle::{HasDisplayHandle, HasWindowHandle};
-use std::sync::Arc;
+use std::sync::{Mutex,Arc};
 const SHADER: &str = r#"
 @vertex
 fn vs_main(@builtin(vertex_index) in_vertex_index: u32) -> @builtin(position) vec4<f32> {
@@ -218,8 +218,35 @@ impl App {
     }
 }
 
+trait Appable {
+    fn resize(&mut self, physical_size:PhysicalSize<u32>,scale_factor:f64);
+    fn resumed(&mut self,window:Arc<Window>);
+    fn suspended(&mut self);
+    fn render(&mut self);
+}
+impl Appable for Arc<Mutex<App>>{
+    fn resize(&mut self, physical_size:PhysicalSize<u32>,scale_factor:f64){
+        self.lock().unwrap().resize(physical_size, scale_factor);
+    }
+    fn resumed(&mut self,window:Arc<Window>) {
+        self.lock().unwrap().resumed(window);
+    }
+    fn suspended(&mut self) {
+        self.lock().unwrap().suspended();
+    }
+    fn render(&mut self) {
+        self.lock().unwrap().render();
+    }
+}
 pub fn run<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>) {
-    let mut app = pollster::block_on(App::new());
+    let mut app = Arc::new(Mutex::new(pollster::block_on(App::new())));
+    let mut app2 = app.clone();
+    std::thread::spawn(move||{
+        loop{
+            std::thread::sleep(std::time::Duration::new(5,0));
+            app2.render();
+        }
+    });
     let mut once = Arc::new(std::sync::Mutex::new(false));
     let _ = event_loop.run(move |event, event_loop| {
         match event {
