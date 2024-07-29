@@ -1,5 +1,6 @@
 use std::time::Instant;
 use log::debug;
+use specs::prelude::*;
 use wgpu::{ColorTargetState, ColorWrites, InstanceFlags, PipelineCompilationOptions, PresentMode, SurfaceConfiguration, TextureViewDescriptor};
 use winit::{
     event::{Event, WindowEvent},
@@ -9,6 +10,7 @@ use winit::{
 use winit::dpi::PhysicalSize;
 use raw_window_handle::{HasDisplayHandle, HasWindowHandle};
 use std::sync::{Mutex,Arc};
+use crate::gpu::Gpu;
 const SHADER: &str = r#"
 @vertex
 fn vs_main(@builtin(vertex_index) in_vertex_index: u32) -> @builtin(position) vec4<f32> {
@@ -41,6 +43,7 @@ struct App {
     adapter: wgpu::Adapter,
     device: wgpu::Device,
     queue: wgpu::Queue,
+    world:World,
 }
 
 impl App {
@@ -81,6 +84,8 @@ impl App {
             )
             .await
             .expect("Failed to create device");
+        let mut world = World::new();
+        world.register::<Gpu>();
         Self {
             instance,
             device,
@@ -89,6 +94,7 @@ impl App {
             renderer: None,
             surface_state: None,
             last_time: Instant::now(),
+            world:world
         }
     }
 
