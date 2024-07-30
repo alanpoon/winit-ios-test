@@ -344,6 +344,8 @@ pub fn run2<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>)
     
     let mut once = Arc::new(std::sync::Mutex::new(false));
     let _ = event_loop.run(move |event, event_loop| {
+        event_loop.set_control_flow(ControlFlow::wait_duration(std::time::Duration::new(5,0)));
+        println!("event {:?}",event);
         match event {
             Event::WindowEvent {
                 event: WindowEvent::Resized(size),
@@ -361,13 +363,14 @@ pub fn run2<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>)
                     world_m.resumed();
                     //world_m.render();
                 }
-                
+                println!("resumed done");
                 *once.lock().unwrap() = true;
+                
             }
             Event::Suspended => {
                 debug!("suspended");
-
-                world_m.suspended();
+                println!("suspended");
+                //world_m.suspended();
             }
             Event::WindowEvent{
                 event:WindowEvent::RedrawRequested,
@@ -376,7 +379,7 @@ pub fn run2<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>)
                 debug!("main events cleared");
                 println!("main events cleared");
                 if *once.lock().unwrap(){
-                    world_m.render();
+                    //world_m.render();
                 }
             }
             Event::WindowEvent {
