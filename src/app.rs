@@ -325,6 +325,7 @@ impl Appable for Arc<Mutex<World>>{
 pub fn run2<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>) {
     let mut world = World::new();
     world.register::<Gpu>();
+    world.insert(GpuState::default());
     world.create_entity().with(pollster::block_on(Gpu::new(window.clone()))).build();
 
     // This dispatches all the systems in parallel (but blocking).
