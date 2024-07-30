@@ -378,6 +378,10 @@ pub fn run2<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>)
             } => {
                 debug!("main events cleared");
                 println!("main events cleared");
+                if cfg!(target_os = "ios"){
+                    world_m.resumed();
+                }
+
                 if *once.lock().unwrap(){
                     //world_m.render();
                 }

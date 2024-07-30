@@ -220,7 +220,7 @@ impl Gpu{
         }
     }
 }
-#[derive(Default,Debug,Clone,Debug,PartialEq)]
+#[derive(Default,Debug,Clone,PartialEq)]
 pub enum GpuStateEnum{
     #[default]
     Idle,
