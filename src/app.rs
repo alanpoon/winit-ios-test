@@ -1,6 +1,6 @@
 use std::time::Instant;
 use log::debug;
-use specs::prelude::*;
+use specs::{prelude::*, storage::{AccessMut, GenericWriteStorage}};
 use wgpu::{ColorTargetState, ColorWrites, InstanceFlags, PipelineCompilationOptions, PresentMode, SurfaceConfiguration, TextureViewDescriptor};
 use winit::{
     event::{Event, WindowEvent},
@@ -10,7 +10,7 @@ use winit::{
 use winit::dpi::PhysicalSize;
 use raw_window_handle::{HasDisplayHandle, HasWindowHandle};
 use std::sync::{Mutex,Arc};
-use crate::gpu::Gpu;
+use crate::gpu::{self, Gpu, GpuState};
 const SHADER: &str = r#"
 @vertex
 fn vs_main(@builtin(vertex_index) in_vertex_index: u32) -> @builtin(position) vec4<f32> {
@@ -71,7 +71,6 @@ impl App {
             .expect("Failed to find an appropriate adapter");
 
         // Create the logical device and command queue
-        let limits = wgpu::Limits::downlevel_webgl2_defaults();
         let (device, queue) = adapter
             .request_device(
                 &wgpu::DeviceDescriptor {
@@ -86,6 +85,7 @@ impl App {
             .expect("Failed to create device");
         let mut world = World::new();
         world.register::<Gpu>();
+
         Self {
             instance,
             device,
@@ -97,7 +97,7 @@ impl App {
             world:world
         }
     }
-
+    
     async fn create_renderer(&mut self) {
         let shader = self.device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: None,
@@ -185,7 +185,7 @@ impl App {
         self.setup_swapchain(window_size, scale_factor);
     }
 
-    fn render(&mut self) {
+    fn render(&self) {
         if let (Some(surface_state), Some(renderer)) = (&self.surface_state, &self.renderer) {
             let render_texture = surface_state.surface.get_current_texture().unwrap();
             let render_texture_view = render_texture.texture.create_view(&TextureViewDescriptor::default());
@@ -225,34 +225,117 @@ impl App {
 }
 
 trait Appable {
-    fn resize(&mut self, physical_size:PhysicalSize<u32>,scale_factor:f64);
-    fn resumed(&mut self,window:Arc<Window>);
+    fn resize(&self, physical_size:PhysicalSize<u32>,scale_factor:f64);
+    fn resumed(&mut self);
     fn suspended(&mut self);
-    fn render(&mut self);
+    fn render(&self);
 }
-impl Appable for Arc<Mutex<App>>{
-    fn resize(&mut self, physical_size:PhysicalSize<u32>,scale_factor:f64){
-        self.lock().unwrap().resize(physical_size, scale_factor);
+// impl Appable for Arc<Mutex<App>>{
+//     fn resize(&mut self, physical_size:PhysicalSize<u32>,scale_factor:f64){
+//         self.lock().unwrap().resize(physical_size, scale_factor);
+//     }
+//     fn resumed(&mut self) {
+//         self.lock().unwrap().resumed();
+//     }
+//     fn suspended(&mut self) {
+//         self.lock().unwrap().suspended();
+//     }
+//     fn render(&mut self) {
+//         self.lock().unwrap().render();
+//     }
+// }
+// pub fn run<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>) {
+//     let mut app = Arc::new(Mutex::new(pollster::block_on(App::new())));
+//     let mut app2 = app.clone();
+//     std::thread::spawn(move||{
+//         loop{
+//             std::thread::sleep(std::time::Duration::new(5,0));
+//             app2.render();
+//         }
+//     });
+//     let mut once = Arc::new(std::sync::Mutex::new(false));
+//     let _ = event_loop.run(move |event, event_loop| {
+//         match event {
+//             Event::WindowEvent {
+//                 event: WindowEvent::Resized(size),
+//                 ..
+//             } => {
+//                 debug!("resized");
+//                 if *once.lock().unwrap(){
+//                     app.resize(size,window.scale_factor());
+//                 }
+//             }
+//             Event::Resumed => {
+//                 debug!("resumed");
+//                 println!("resumed");
+//                 if !*once.lock().unwrap(){
+//                     app.resumed(window.clone());
+//                     app.render();
+//                 }
+                
+//                 *once.lock().unwrap() = true;
+//             }
+//             Event::Suspended => {
+//                 debug!("suspended");
+
+//                 app.suspended();
+//             }
+//             Event::WindowEvent{
+//                 event:WindowEvent::RedrawRequested,
+//                 ..
+//             } => {
+//                 debug!("main events cleared");
+//                 println!("main events cleared");
+//                 if *once.lock().unwrap(){
+//                     app.render();
+//                 }
+//             }
+//             Event::WindowEvent {
+//                 event: WindowEvent::CloseRequested,
+//                 ..
+//             } => {
+//                 debug!("quit");
+//                 println!("quit");
+//                 event_loop.exit();
+//             }
+//             e => {
+//                 debug!("other event {:?}", e);
+//             }
+//         }
+//     });
+// }
+impl Appable for Arc<Mutex<World>>{
+    fn resize(&self, physical_size:PhysicalSize<u32>,scale_factor:f64){
+        for gpu in self.lock().unwrap().write_storage::<gpu::Gpu>().join(){
+            gpu.resize(physical_size,scale_factor);
+        }
     }
-    fn resumed(&mut self,window:Arc<Window>) {
-        self.lock().unwrap().resumed(window);
+    fn resumed(&mut self) {
+        *self.lock().unwrap().write_resource::<gpu::GpuState>() = GpuState(gpu::GpuStateEnum::WillResumed);
     }
     fn suspended(&mut self) {
-        self.lock().unwrap().suspended();
     }
-    fn render(&mut self) {
-        self.lock().unwrap().render();
+    fn render(&self) {
+        
+        for gpu in self.lock().unwrap().write_storage::<gpu::Gpu>().join(){
+            gpu.render();
+        }
     }
 }
-pub fn run<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>) {
-    let mut app = Arc::new(Mutex::new(pollster::block_on(App::new())));
-    let mut app2 = app.clone();
+pub fn run2<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>) {
+    let mut world = World::new();
+    world.register::<Gpu>();
+    world.create_entity().with(pollster::block_on(Gpu::new(window.clone()))).build();
+
+    // This dispatches all the systems in parallel (but blocking).
+    
+    let mut world_m = Arc::new(Mutex::new(world));
+    let world_m2 =world_m.clone();
     std::thread::spawn(move||{
-        loop{
-            std::thread::sleep(std::time::Duration::new(5,0));
-            app2.render();
-        }
+        let mut dispatcher = DispatcherBuilder::new().with(gpu::GpuKey, "sys_gpu_key", &[]).build();
+        dispatcher.dispatch(&mut world_m2.lock().unwrap());
     });
+    
     let mut once = Arc::new(std::sync::Mutex::new(false));
     let _ = event_loop.run(move |event, event_loop| {
         match event {
@@ -262,15 +345,15 @@ pub fn run<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>) 
             } => {
                 debug!("resized");
                 if *once.lock().unwrap(){
-                    app.resize(size,window.scale_factor());
+                    world_m.resize(size,window.scale_factor());
                 }
             }
             Event::Resumed => {
                 debug!("resumed");
                 println!("resumed");
                 if !*once.lock().unwrap(){
-                    app.resumed(window.clone());
-                    app.render();
+                    world_m.resumed();
+                    //world_m.render();
                 }
                 
                 *once.lock().unwrap() = true;
@@ -278,7 +361,7 @@ pub fn run<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>) 
             Event::Suspended => {
                 debug!("suspended");
 
-                app.suspended();
+                world_m.suspended();
             }
             Event::WindowEvent{
                 event:WindowEvent::RedrawRequested,
@@ -287,7 +370,7 @@ pub fn run<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>) 
                 debug!("main events cleared");
                 println!("main events cleared");
                 if *once.lock().unwrap(){
-                    app.render();
+                    world_m.render();
                 }
             }
             Event::WindowEvent {
