@@ -217,14 +217,14 @@ impl Gpu{
         }
     }
 }
-#[derive(Default)]
+#[derive(Default,Debug)]
 pub enum GpuStateEnum{
     #[default]
     Idle,
     WillResumed,
     Resumed
 }
-#[derive(Default)]
+#[derive(Default,Debug)]
 pub struct GpuState(pub GpuStateEnum);
 impl Component for GpuState {
     type Storage = VecStorage<Self>;
@@ -235,6 +235,7 @@ impl<'a> System<'a> for GpuKey {
 
     fn run(&mut self, (mut gpu,mut gpustate): Self::SystemData) {
         for (gpu) in (&mut gpu).join() {
+            println!("loop {:?}",gpustate.0);
             match gpustate.0{
                 GpuStateEnum::WillResumed=>{
                     gpu.resumed();
