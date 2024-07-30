@@ -1,12 +1,9 @@
 use mobile_entry_point::mobile_entry_point;
 use winit::{event_loop::EventLoopBuilder, window::{Window, WindowBuilder}};
 use std::sync::Arc;
-pub mod app;
+mod app;
 mod gpu;
-#[macro_use]
-mod tracing;
-#[mobile_entry_point]
-pub extern "C" fn main() {
+fn main(){
     let event_loop = EventLoopBuilder::new().build().unwrap();
     let window = WindowBuilder::new().build(&event_loop).unwrap();
     app::run2(event_loop, Arc::new(window));

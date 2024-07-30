@@ -10,7 +10,7 @@ use winit::{
 use winit::dpi::PhysicalSize;
 use raw_window_handle::{HasDisplayHandle, HasWindowHandle};
 use std::sync::{Mutex,Arc};
-use crate::gpu::{self, Gpu, GpuState};
+use crate::gpu::{self, Gpu, GpuState, GpuStateEnum};
 const SHADER: &str = r#"
 @vertex
 fn vs_main(@builtin(vertex_index) in_vertex_index: u32) -> @builtin(position) vec4<f32> {
@@ -306,8 +306,11 @@ trait Appable {
 // }
 impl Appable for Arc<Mutex<World>>{
     fn resize(&self, physical_size:PhysicalSize<u32>,scale_factor:f64){
-        for gpu in self.lock().unwrap().write_storage::<gpu::Gpu>().join(){
-            gpu.resize(physical_size,scale_factor);
+        let state = self.lock().unwrap().read_resource::<gpu::GpuState>().0.clone();
+        if state == GpuStateEnum::Resumed{
+            for gpu in self.lock().unwrap().write_storage::<gpu::Gpu>().join(){
+                gpu.resize(physical_size,scale_factor);
+            }
         }
     }
     fn resumed(&mut self) {
@@ -316,9 +319,11 @@ impl Appable for Arc<Mutex<World>>{
     fn suspended(&mut self) {
     }
     fn render(&self) {
-        
-        for gpu in self.lock().unwrap().write_storage::<gpu::Gpu>().join(){
-            gpu.render();
+        let state = self.lock().unwrap().read_resource::<gpu::GpuState>().0.clone();
+        if state == GpuStateEnum::Resumed{
+            for gpu in self.lock().unwrap().write_storage::<gpu::Gpu>().join(){
+                gpu.render();
+            }
         }
     }
 }

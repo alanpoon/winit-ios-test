@@ -46,15 +46,18 @@ impl Component for Gpu {
 impl Gpu{
     pub async fn new(window:Arc<Window>) -> Self {
         let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
-            backends: if cfg!(not(target_os = "android")) {
+            backends: if cfg!(target_os = "ios") {
                 wgpu::Backends::METAL
+            } else if cfg!(target_os = "windows") {
+                wgpu::Backends::VULKAN
             } else {
-                wgpu::Backends::METAL
+                wgpu::Backends::DX12
             },
-            dx12_shader_compiler: wgpu::Dx12Compiler::Dxc {
-                dxc_path: None,
-                dxil_path: None,
-            },
+            // dx12_shader_compiler: wgpu::Dx12Compiler::Dxc {
+            //     dxc_path: None,
+            //     dxil_path: None,
+            // },
+            dx12_shader_compiler: wgpu::Dx12Compiler::Fxc,
             flags:InstanceFlags::all(),
             gles_minor_version:wgpu::Gles3MinorVersion::Automatic
         });
@@ -217,7 +220,7 @@ impl Gpu{
         }
     }
 }
-#[derive(Default)]
+#[derive(Default,Clone,Debug,PartialEq)]
 pub enum GpuStateEnum{
     #[default]
     Idle,
@@ -238,6 +241,7 @@ impl<'a> System<'a> for GpuKey {
             match gpustate.0{
                 GpuStateEnum::WillResumed=>{
                     gpu.resumed();
+                    gpu.render();
                     *gpustate = GpuState(GpuStateEnum::Resumed);
                 }
                 _=>{}
