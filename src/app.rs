@@ -314,16 +314,20 @@ impl Appable for Arc<Mutex<World>>{
         }
     }
     fn resumed(&mut self) {
-        *self.lock().unwrap().write_resource::<gpu::GpuState>() = GpuState(gpu::GpuStateEnum::WillResumed);
+        let l = self.lock().unwrap();
+        let mut m = l.write_resource::<gpu::Gpu>();
+        m.resumed();
+        m.render();
+        l.write_resource::<gpu::GpuState>().0 = GpuStateEnum::Resumed;
     }
     fn suspended(&mut self) {
     }
     fn render(&self) {
         let state = self.lock().unwrap().read_resource::<gpu::GpuState>().0.clone();
         if state == GpuStateEnum::Resumed{
-            for gpu in self.lock().unwrap().write_storage::<gpu::Gpu>().join(){
-                gpu.render();
-            }
+            let l = self.lock().unwrap();
+            let mut m = l.write_resource::<gpu::Gpu>();
+            m.render();
         }
     }
 }
@@ -331,7 +335,8 @@ pub fn run2<T: std::fmt::Debug>(mut event_loop: EventLoop<T>,window:Arc<Window>)
     let mut world = World::new();
     world.register::<Gpu>();
     world.insert(GpuState::default());
-    world.create_entity().with(pollster::block_on(Gpu::new(window.clone()))).build();
+    world.insert(pollster::block_on(Gpu::new(Some(window.clone()))));
+    //world.create_entity().with(pollster::block_on(Gpu::new(window.clone()))).build();
 
     // This dispatches all the systems in parallel (but blocking).
     

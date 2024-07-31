@@ -38,13 +38,18 @@ pub struct Gpu{
     adapter: wgpu::Adapter,
     device: wgpu::Device,
     queue: wgpu::Queue,
-    window:Arc<Window>
+    window:Option<Arc<Window>>
 }
 impl Component for Gpu {
     type Storage = VecStorage<Self>;
 }
+impl Default for Gpu{
+    fn default() -> Self {
+        pollster::block_on(Self::new(None))
+    }
+}
 impl Gpu{
-    pub async fn new(window:Arc<Window>) -> Self {
+    pub async fn new(window:Option<Arc<Window>>) -> Self {
         let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
             backends: if cfg!(target_os = "ios") {
                 wgpu::Backends::METAL
@@ -157,7 +162,7 @@ impl Gpu{
     }
 
     pub fn resumed(&mut self) {
-        let window = self.window.clone();
+        let window = self.window.clone().unwrap();
         let surface = unsafe {
             self.instance.create_surface(window.clone())
         }.unwrap();
@@ -234,21 +239,23 @@ impl Component for GpuState {
 }
 pub struct GpuKey;
 impl<'a> System<'a> for GpuKey {
-    type SystemData = (WriteStorage<'a, Gpu>, Write<'a, GpuState>);
+    type SystemData = (Write<'a, Gpu>, Write<'a, GpuState>);
 
     fn run(&mut self, (mut gpu,mut gpustate): Self::SystemData) {
-        for (gpu) in (&mut gpu).join() {
-            println!("loop {:?}",gpustate.0);
-            match gpustate.0{
-                GpuStateEnum::WillResumed=>{
-                    gpu.resumed();
-                    gpu.render();
-                    *gpustate = GpuState(GpuStateEnum::Resumed);
-                }
-                _=>{}
-            }
-           
+        // for (gpu) in (&mut gpu).join() {
+        //     println!("loop {:?}",gpustate.0);
+        //     // match gpustate.0{
+        //     //     GpuStateEnum::WillResumed=>{
+        //     //         //gpu.resumed();
+        //     //         gpu.render();
+        //     //         *gpustate = GpuState(GpuStateEnum::Resumed);
+        //     //     }
+        //     //     _=>{}
+        //     // }
+        //     gpu.render();
+        // }
+        if gpu.last_time.elapsed() > std::time::Duration::new(5,0){
+            gpu.render();
         }
-
     }
 }
