@@ -83,6 +83,26 @@ pub async fn init(app:&mut App,android_app:AndroidApp){
     .with(main_scene(), ())
     .spawn(world);
 }
+#[cfg(not(target_os = "android"))]
+pub async fn init(app:&mut App){
+    let world = &mut app.world;
+
+    Cube.el()
+        .with(color(), vec4(0.5, 0.5, 0.5, 1.))
+        .with(translation(), Vec3::Z)
+        .with(cast_shadows(), ())
+        .with(outline(), Vec4::ONE)
+        .spawn_static(world);
+    Quad.el().with(scale(), Vec3::ONE * 10.).spawn_static(world);
+
+    ambient_cameras::spherical::new(
+        vec3(0., 0., 0.),
+        SphericalCoords::new(std::f32::consts::PI / 4., std::f32::consts::PI / 4., 5.),
+    )
+    .with(active_camera(), 0.)
+    .with(main_scene(), ())
+    .spawn(world);
+}
 #[cfg(target_os = "android")]
 pub async fn init2(app: &mut App,android_app:AndroidApp) {
     tracing::info!("init....");

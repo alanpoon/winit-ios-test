@@ -83,7 +83,7 @@ pub fn new(eventloop:EventLoop<()>){
     let  aw = AppWrapper::new_with_event_loop(eventloop);
 
     tracing::info!("after event_loop");
-    let status = aw.run_blocking(client::init2,Box::new(||{
+    let status = aw.run_blocking(client::init,Box::new(||{
         shared::components::init().unwrap();
     }));
 }
