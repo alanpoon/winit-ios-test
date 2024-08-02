@@ -7,17 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		394595042C4938660058D87D /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 394595032C4938660058D87D /* AudioToolbox.framework */; };
+		394595062C4938700058D87D /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 394595052C4938700058D87D /* CoreMotion.framework */; };
+		3945950A2C4939C30058D87D /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 394595092C4939C30058D87D /* libc++.tbd */; };
 		5F18DBDB2A64020F00EFCB2C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F18DBDA2A64020F00EFCB2C /* AppDelegate.swift */; };
 		5F18DBF52A6406AA00EFCB2C /* libwinitios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F18DBF42A64069900EFCB2C /* libwinitios.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		394595032C4938660058D87D /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		394595052C4938700058D87D /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		394595072C4938E50058D87D /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		394595092C4939C30058D87D /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		5F18DBD72A64020F00EFCB2C /* winit-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "winit-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F18DBDA2A64020F00EFCB2C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5F18DBF02A64027A00EFCB2C /* Bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bridge.h; sourceTree = "<group>"; };
 		5F18DBF22A64059F00EFCB2C /* libwinitios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwinitios.a; path = "../target/aarch64-apple-ios/debug/libwinitios.a"; sourceTree = "<group>"; };
 		5F18DBF32A6405AB00EFCB2C /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
-		5F18DBF42A64069900EFCB2C /* libwinitios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwinitios.a; path = "../target/aarch64-apple-ios-sim/debug/libwinitios.a"; sourceTree = "<group>"; };
+		5F18DBF42A64069900EFCB2C /* libwinitios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwinitios.a; path = "../target/aarch64-apple-ios-sim/release/libwinitios.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -25,6 +32,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3945950A2C4939C30058D87D /* libc++.tbd in Frameworks */,
+				394595062C4938700058D87D /* CoreMotion.framework in Frameworks */,
+				394595042C4938660058D87D /* AudioToolbox.framework in Frameworks */,
 				5F18DBF52A6406AA00EFCB2C /* libwinitios.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -61,6 +71,10 @@
 		5F18DBF12A64059F00EFCB2C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				394595092C4939C30058D87D /* libc++.tbd */,
+				394595072C4938E50058D87D /* AudioUnit.framework */,
+				394595052C4938700058D87D /* CoreMotion.framework */,
+				394595032C4938660058D87D /* AudioToolbox.framework */,
 				5F18DBF42A64069900EFCB2C /* libwinitios.a */,
 				5F18DBF32A6405AB00EFCB2C /* libresolv.tbd */,
 				5F18DBF22A64059F00EFCB2C /* libwinitios.a */,
@@ -277,8 +291,8 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/../target/aarch64-apple-ios-sim/debug",
-					"$(PROJECT_DIR)/../target/aarch64-apple-ios/debug",
+					"$(PROJECT_DIR)/../target/aarch64-apple-ios-sim/release",
+					"$(PROJECT_DIR)/../target/aarch64-apple-ios-sim/release",
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.joep.winit-ios";
@@ -310,8 +324,8 @@
 					"@executable_path/Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/../target/aarch64-apple-ios-sim/debug",
-					"$(PROJECT_DIR)/../target/aarch64-apple-ios/debug",
+					"$(PROJECT_DIR)/../target/aarch64-apple-ios-sim/release",
+					"$(PROJECT_DIR)/../target/aarch64-apple-ios-sim/release",
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.joep.winit-ios";
