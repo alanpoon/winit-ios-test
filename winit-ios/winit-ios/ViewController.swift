@@ -4,15 +4,27 @@
 //
 //  Created by user265135 on 8/3/24.
 //
+import UIKit
+import WebKit
 
-import SwiftUI
+class ViewController: UIViewController, WKNavigationDelegate {
+    var webView: WKWebView!
 
-struct ViewController: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+    override func loadView() {
+        print("loadView")
+        webView = WKWebView()
+        webView.navigationDelegate = self
+        view = webView
     }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        let url = URL(string: "https://www.google.com")!
+        webView.load(URLRequest(url: url))
+        webView.allowsBackForwardNavigationGestures = true
+    }
+
+
 }
 
-#Preview {
-    ViewController()
-}
+

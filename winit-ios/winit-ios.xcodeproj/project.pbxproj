@@ -10,6 +10,9 @@
 		394595042C4938660058D87D /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 394595032C4938660058D87D /* AudioToolbox.framework */; };
 		394595062C4938700058D87D /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 394595052C4938700058D87D /* CoreMotion.framework */; };
 		3945950A2C4939C30058D87D /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 394595092C4939C30058D87D /* libc++.tbd */; };
+		39BE42A92C5E829E0011EEB0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39BE42A82C5E829E0011EEB0 /* ViewController.swift */; };
+		39BE42B22C5E91A30011EEB0 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 39BE42B12C5E91A30011EEB0 /* Storyboard.storyboard */; };
+		39BE42B42C5E92B90011EEB0 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 39BE42B32C5E92B90011EEB0 /* Launch Screen.storyboard */; };
 		5F18DBDB2A64020F00EFCB2C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F18DBDA2A64020F00EFCB2C /* AppDelegate.swift */; };
 		5F18DBF52A6406AA00EFCB2C /* libwinitios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F18DBF42A64069900EFCB2C /* libwinitios.a */; };
 /* End PBXBuildFile section */
@@ -19,6 +22,9 @@
 		394595052C4938700058D87D /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		394595072C4938E50058D87D /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		394595092C4939C30058D87D /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		39BE42A82C5E829E0011EEB0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		39BE42B12C5E91A30011EEB0 /* Storyboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Storyboard.storyboard; sourceTree = "<group>"; };
+		39BE42B32C5E92B90011EEB0 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		5F18DBD72A64020F00EFCB2C /* winit-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "winit-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F18DBDA2A64020F00EFCB2C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5F18DBF02A64027A00EFCB2C /* Bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bridge.h; sourceTree = "<group>"; };
@@ -64,6 +70,9 @@
 			children = (
 				5F18DBDA2A64020F00EFCB2C /* AppDelegate.swift */,
 				5F18DBF02A64027A00EFCB2C /* Bridge.h */,
+				39BE42A82C5E829E0011EEB0 /* ViewController.swift */,
+				39BE42B12C5E91A30011EEB0 /* Storyboard.storyboard */,
+				39BE42B32C5E92B90011EEB0 /* Launch Screen.storyboard */,
 			);
 			path = "winit-ios";
 			sourceTree = "<group>";
@@ -110,7 +119,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1420;
-				LastUpgradeCheck = 1420;
+				LastUpgradeCheck = 1540;
 				TargetAttributes = {
 					5F18DBD62A64020F00EFCB2C = {
 						CreatedOnToolsVersion = 14.2;
@@ -140,6 +149,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				39BE42B42C5E92B90011EEB0 /* Launch Screen.storyboard in Resources */,
+				39BE42B22C5E91A30011EEB0 /* Storyboard.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,6 +161,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				39BE42A92C5E829E0011EEB0 /* ViewController.swift in Sources */,
 				5F18DBDB2A64020F00EFCB2C /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -193,6 +205,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -253,6 +266,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
