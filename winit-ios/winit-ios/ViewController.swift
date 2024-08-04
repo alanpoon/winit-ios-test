@@ -13,8 +13,9 @@ class ViewController: UIViewController, WKNavigationDelegate {
     override func loadView() {
         print("loadView")
         let webViewConfiguration = WKWebViewConfiguration()
-        let schemeHandler = CustomSchemeHandler()
-        webViewConfiguration.setURLSchemeHandler(schemeHandler, forURLScheme: "http")
+        //let schemeHandler = CustomSchemeHandler()
+        //webViewConfiguration.setURLSchemeHandler(schemeHandler, forURLScheme: "http")
+        URLProtocol.registerClass(CustomSchemeHandler.self)
         webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
 
         //webView = WKWebView()
@@ -29,7 +30,12 @@ class ViewController: UIViewController, WKNavigationDelegate {
         webView.allowsBackForwardNavigationGestures = true
         webView.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
        
+        
+    }
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            
         let js = """
+        alert("hi1");
         (function() {
 
             setTimeout(function(){
@@ -83,9 +89,16 @@ class ViewController: UIViewController, WKNavigationDelegate {
         })()
 
         """
-        webView.evaluateJavaScript(js, completionHandler: nil)
-    }
-
+        webView.evaluateJavaScript(js, completionHandler: {(result,error) in
+            if true{
+                print("error")
+                print(error)
+            }else{
+                print("result")
+                print(result)
+            }
+        })
+        }
 
 }
 

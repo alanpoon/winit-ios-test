@@ -1,15 +1,28 @@
-import WebKit
+//
+//  CustomSchemeHandler.swift
+//  winit-ios
+//
+//  Created by user265135 on 8/4/24.
+//
 
-class CustomSchemeHandler: NSObject, WKURLSchemeHandler {
-    func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
-        // Intercept request here
-        let request = urlSchemeTask.request
+import Foundation
+//class CustomSchemeHandler: NSObject{
+//    let request = urlSchemeTask.request
+//    print(request)
+//    
+//    func webView(_ webView:WKWebView, stop urlSchemeTask:WKURLSchemeTask){
+//        
+//    }
+//}
+class CustomSchemeHandler: URLProtocol{
+    override class func canInit(with request: URLRequest) -> Bool {
         print(request)
-        // Process the request or send a custom response
-        // ...
+        return true
     }
-
-    func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
-        // Handle stopping the request
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        return request
+    }
+    override func startLoading() {
+        
     }
 }
