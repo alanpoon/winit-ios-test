@@ -18,9 +18,12 @@ class CustomSchemeHandler: URLProtocol{
     //private(set) var once : Bool = false
     static var once = false
     override class func canInit(with request: URLRequest) -> Bool {
+        print(request)
         guard let url = request.url?.absoluteString else {
                    return false
         }
+        print("url")
+        print(url)
         if url.contains("ambient.toml") && !once{
                    // Only handle the request if it has not been handled before
             var new_url = url.replacingOccurrences(of: "%2F", with: "/")
@@ -40,10 +43,12 @@ class CustomSchemeHandler: URLProtocol{
    
             
         }
-        print(request)
+        
         return true
     }
     override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        print("canonical")
+        print(request)
         return request
     }
     override func startLoading() {

@@ -13,11 +13,11 @@ class ViewController: UIViewController, WKNavigationDelegate {
     override func loadView() {
         print("loadView")
         let webViewConfiguration = WKWebViewConfiguration()
-        //let schemeHandler = CustomSchemeHandler()
+        let schemeHandler = CustomSchemeHandler2()
         //webViewConfiguration.setURLSchemeHandler(schemeHandler, forURLScheme: "http")
-        URLProtocol.registerClass(CustomSchemeHandler.self)
+        
         webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
-
+        URLProtocol.registerClass(CustomSchemeHandler.self)
         //webView = WKWebView()
         webView.navigationDelegate = self
         view = webView
@@ -25,15 +25,23 @@ class ViewController: UIViewController, WKNavigationDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let url = URL(string: "https://ambient.run/games")!
+        //let url = URL(string: "https://ambient.run/games")!
+        let url = URL(string:"https://ambient.run/packages/h3gv2vnpcajq75woh5nmiemeahfpaku4")!
         webView.load(URLRequest(url: url))
         webView.allowsBackForwardNavigationGestures = true
         webView.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
        
         
     }
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            
+//    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!,decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+    func webView(_ webView: WKWebView,decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        if let url = navigationAction.request.url {
+                   print("Intercepted request to URL: \(url)")
+                   // Perform custom actions with the URL here
+               }
+               // Allow the navigation to continue
+               decisionHandler(.allow)
+        
         let js = """
         alert("hi1");
         (function() {
@@ -87,7 +95,6 @@ class ViewController: UIViewController, WKNavigationDelegate {
             },5000)
 
         })()
-
         """
         webView.evaluateJavaScript(js, completionHandler: {(result,error) in
             if true{
@@ -97,6 +104,24 @@ class ViewController: UIViewController, WKNavigationDelegate {
                 print("result")
                 print(result)
             }
+        })
+        var js2 = """
+           const elements = document.getElementsByClassName('PackagePageTomlCopy');
+           if (elements.length >0){
+             var deploymentText = elements[0].querySelector("div").innerText;
+             const deploymentMatch = deploymentText.match(//"(.*?)"//g)
+            return deploymentMatch[0].replace("'","");
+           }else{
+            return "Cannot find"
+           }
+        """
+        webView.evaluateJavaScript(js2, completionHandler: {(result,error) in
+            
+                print("error")
+                print(error)
+                            print("result")
+                print(result)
+            
         })
         }
 
