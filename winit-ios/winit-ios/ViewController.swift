@@ -9,7 +9,7 @@ import WebKit
 
 class ViewController: UIViewController, WKNavigationDelegate {
     var webView: WKWebView!
-
+    var Once:Bool = false
     override func loadView() {
         print("loadView")
         let webViewConfiguration = WKWebViewConfiguration()
@@ -17,7 +17,7 @@ class ViewController: UIViewController, WKNavigationDelegate {
         //webViewConfiguration.setURLSchemeHandler(schemeHandler, forURLScheme: "http")
         
         webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
-        URLProtocol.registerClass(CustomSchemeHandler.self)
+        //URLProtocol.registerClass(CustomSchemeHandler.self)
         //webView = WKWebView()
         webView.navigationDelegate = self
         view = webView
@@ -105,25 +105,58 @@ class ViewController: UIViewController, WKNavigationDelegate {
                 print(result)
             }
         })
-        var js2 = """
-           const elements = document.getElementsByClassName('PackagePageTomlCopy');
-           if (elements.length >0){
-             var deploymentText = elements[0].querySelector("div").innerText;
-             const deploymentMatch = deploymentText.match(//"(.*?)"//g)
-            return deploymentMatch[0].replace("'","");
-           }else{
-            return "Cannot find"
-           }
-        """
-        webView.evaluateJavaScript(js2, completionHandler: {(result,error) in
-            
-                print("error")
-                print(error)
-                            print("result")
-                print(result)
-            
-        })
+        if !self.Once{
+            self.Once = true
+            DispatchQueue.main.asyncAfter(deadline: .now()+8){
+                var js3 = """
+                    var elements = document.getElementsByClassName('PackagePageTomlCopy');
+                              elements[0].innerText.split("=")[2].replaceAll('"',"").replace("}","").replaceAll(" ","").trim()
+                """
+                webView.evaluateJavaScript(js3, completionHandler: {(result,error) in
+                    
+                        print("error js3")
+                        print(error)
+                                    print("result js3")
+                    if result != nil{
+                        print("result js3")
+                        print(result!)
+                        let deployment_id = result!
+                        let url = URL(string: "https://api.ambient.run/servers/ensure-running?deployment_id=\(deployment_id)&max_players=5&region=Auto")!
+                        print(url)
+                        let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
+                            guard let data = data else { return }
+                            print(String(data: data, encoding: .utf8)!)
+                            let success = writeDataToFile(fileName: "ws_path.txt", data: data)
+                           
+                            
+                            print(success)
+                        }
+
+                        task.resume()
+               
+                    }
+                    
+                })
+                
+            }
         }
+        
+        }
+
+}
+extension String {
+
+    func trimmingTrailingSpaces() -> String {
+        var t = self
+        while t.hasSuffix(" ") {
+          t = "" + t.dropLast()
+        }
+        return t
+    }
+
+    mutating func trimmedTrailingSpaces() {
+        self = self.trimmingTrailingSpaces()
+    }
 
 }
 
