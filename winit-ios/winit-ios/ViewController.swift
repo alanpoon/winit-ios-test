@@ -151,3 +151,19 @@ class ViewController: UIViewController, WKNavigationDelegate {
 }
 
 
+func callback_to_swift(arg: Int32) {
+    DispatchQueue.main.async {
+        switch arg {
+        case 0:
+            print("wgpu canvas created!")
+            break
+        case 1:
+            print("canvas enter frame")
+            break
+            
+        default:
+            break
+        }
+    }
+    
+}

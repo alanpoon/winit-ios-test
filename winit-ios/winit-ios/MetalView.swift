@@ -1,11 +1,12 @@
 //
 //  MetalView.swift
+//  winit-ios
 //
-//  Created by LiJinlei on 2018/11/23.
+//  Created by user265135 on 8/8/24.
 //
 
-import UIKit
 import Foundation
+import UIKit
 
 class MetalView: UIView {
     override class var layerClass: AnyClass {
@@ -30,4 +31,3 @@ class MetalView: UIView {
         self.contentScaleFactor = UIScreen.main.nativeScale
     }
 }
-

@@ -15,6 +15,7 @@
 		39BE42B22C5E91A30011EEB0 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 39BE42B12C5E91A30011EEB0 /* Storyboard.storyboard */; };
 		39BE42B42C5E92B90011EEB0 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 39BE42B32C5E92B90011EEB0 /* Launch Screen.storyboard */; };
 		39E2DBE52C5FBB92004493F2 /* CustomSchemeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39E2DBE42C5FBB92004493F2 /* CustomSchemeHandler.swift */; };
+		39EE5C8C2C648D5500EA9241 /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39EE5C8B2C648D5500EA9241 /* MetalView.swift */; };
 		5F18DBDB2A64020F00EFCB2C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F18DBDA2A64020F00EFCB2C /* AppDelegate.swift */; };
 		5F18DBF52A6406AA00EFCB2C /* libwinitios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F18DBF42A64069900EFCB2C /* libwinitios.a */; };
 /* End PBXBuildFile section */
@@ -29,6 +30,8 @@
 		39BE42B12C5E91A30011EEB0 /* Storyboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Storyboard.storyboard; sourceTree = "<group>"; };
 		39BE42B32C5E92B90011EEB0 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		39E2DBE42C5FBB92004493F2 /* CustomSchemeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSchemeHandler.swift; sourceTree = "<group>"; };
+		39EE5C8B2C648D5500EA9241 /* MetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalView.swift; sourceTree = "<group>"; };
+		39EE5C8E2C6495F500EA9241 /* winit_ios_Bridging_Header_h.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = winit_ios_Bridging_Header_h.h; sourceTree = "<group>"; };
 		5F18DBD72A64020F00EFCB2C /* winit-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "winit-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F18DBDA2A64020F00EFCB2C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5F18DBF02A64027A00EFCB2C /* Bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Bridge.h; sourceTree = "<group>"; };
@@ -79,6 +82,8 @@
 				39BE42B32C5E92B90011EEB0 /* Launch Screen.storyboard */,
 				39E2DBE42C5FBB92004493F2 /* CustomSchemeHandler.swift */,
 				39B8BF2F2C609D9B00B18613 /* CustomSchemeHandler2.swift */,
+				39EE5C8B2C648D5500EA9241 /* MetalView.swift */,
+				39EE5C8E2C6495F500EA9241 /* winit_ios_Bridging_Header_h.h */,
 			);
 			path = "winit-ios";
 			sourceTree = "<group>";
@@ -169,6 +174,7 @@
 			files = (
 				39BE42A92C5E829E0011EEB0 /* ViewController.swift in Sources */,
 				39B8BF302C609D9B00B18613 /* CustomSchemeHandler2.swift in Sources */,
+				39EE5C8C2C648D5500EA9241 /* MetalView.swift in Sources */,
 				5F18DBDB2A64020F00EFCB2C /* AppDelegate.swift in Sources */,
 				39E2DBE52C5FBB92004493F2 /* CustomSchemeHandler.swift in Sources */,
 			);
