@@ -16,3 +16,4 @@ winit = {version="0.28", default-features=false }
 mobile-entry-point = "0.1.1"
 ambient_app = {path = "../Ambient/crates/app"}
 ambient = {path = "crates/app"}
+libc = "0.2"

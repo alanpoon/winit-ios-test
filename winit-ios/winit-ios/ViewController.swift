@@ -9,18 +9,19 @@ import WebKit
 
 class ViewController: UIViewController, WKNavigationDelegate {
     var webView: WKWebView!
-
+    @IBOutlet var metalV: MetalView!
+    var appWrapper: OpaquePointer?
+    lazy var displayLink: CADisplayLink = {
+        CADisplayLink.init(target: self, selector: #selector(enterFrame))
+    }()
     override func loadView() {
         print("loadView")
-        let webViewConfiguration = WKWebViewConfiguration()
-        let schemeHandler = CustomSchemeHandler2()
-        //webViewConfiguration.setURLSchemeHandler(schemeHandler, forURLScheme: "http")
-        
-        webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
-        URLProtocol.registerClass(CustomSchemeHandler.self)
-        //webView = WKWebView()
-        webView.navigationDelegate = self
-        view = webView
+        // let webViewConfiguration = WKWebViewConfiguration()
+        // let schemeHandler = CustomSchemeHandler2()
+        // webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
+        // URLProtocol.registerClass(CustomSchemeHandler.self)
+        // webView.navigationDelegate = self
+        // view = webView
     }
 
     override func viewDidLoad() {
@@ -30,8 +31,30 @@ class ViewController: UIViewController, WKNavigationDelegate {
         webView.load(URLRequest(url: url))
         webView.allowsBackForwardNavigationGestures = true
         webView.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
-       
-        
+        self.displayLink.add(to: .current, forMode: .default)
+        self.displayLink.isPaused = true
+
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.view.backgroundColor = .white
+        if appWrapper == nil {
+            let viewPointer = Unmanaged.passUnretained(self.metalV).toOpaque()
+            let metalLayer = Unmanaged.passUnretained(self.metalV.layer).toOpaque()
+            let maximumFrames = UIScreen.main.maximumFramesPerSecond
+
+            let viewObj = ios_view_obj(view: viewPointer, metal_layer: metalLayer,maximum_frames: Int32(maximumFrames), callback_to_swift: callback_to_swift)
+
+            appWrapper = create_wgpu_canvas(viewObj)
+        }
+        self.displayLink.isPaused = false
+    }
+    @objc func enterFrame() {
+        guard let canvas = self.appWrapper else {
+            return
+        }
+        // call rust
+        enter_frame(canvas)
     }
 //    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!,decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
     func webView(_ webView: WKWebView,decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
@@ -41,7 +64,7 @@ class ViewController: UIViewController, WKNavigationDelegate {
                }
                // Allow the navigation to continue
                decisionHandler(.allow)
-        
+
         let js = """
         alert("hi1");
         (function() {
@@ -116,12 +139,12 @@ class ViewController: UIViewController, WKNavigationDelegate {
            }
         """
         webView.evaluateJavaScript(js2, completionHandler: {(result,error) in
-            
+
                 print("error")
                 print(error)
                             print("result")
                 print(result)
-            
+
         })
         }
 

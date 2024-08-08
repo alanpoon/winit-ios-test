@@ -19,7 +19,7 @@ use std::path::PathBuf;
 #[cfg(target_os = "android")]
 use winit::platform::android::activity::AndroidApp;
 use ambient_audio::AudioStream;
-use ambient_app::AppWrapper;
+use ambient_app::{ffi::IOSViewObj,AppWrapper};
 #[cfg(target_os = "android")]
 pub fn new_main(eventloop:EventLoop<()>,android_app:AndroidApp){
     tracing::info!("start main..");
@@ -58,6 +58,7 @@ pub fn new_main(eventloop:EventLoop<()>,android_app:AndroidApp){
 
 
 }
+
 pub fn new(eventloop:EventLoop<()>){
     ambient_git_rev_init::init().expect("Should be called exactly once");
 
@@ -86,4 +87,35 @@ pub fn new(eventloop:EventLoop<()>){
     let status = aw.run_blocking(client::init,Box::new(||{
         shared::components::init().unwrap();
     }));
+}
+#[cfg(target_os="ios")]
+pub fn new_ios(obj:ambient_app::ffi::IOSViewObj)->AppWrapper{
+
+    ambient_git_rev_init::init().expect("Should be called exactly once");
+
+    shared::components::init().unwrap();
+
+    let audio_bool = false;
+    let audio_stream = if audio_bool {
+        match AudioStream::new() {
+            Ok(v) => Some(v),
+            Err(err) => {
+                tracing::error!("Failed to initialize audio stream: {err}");
+                None
+            }
+        }
+    } else {
+        None
+    };
+
+    let is_debug = false;
+    //box_init();
+    tracing::info!("before event_loop");
+    let  aw = AppWrapper::new_with_view(obj,Box::new(||{}));
+    return aw
+
+}
+#[cfg(target_os="ios")]
+pub fn run_with_view(aw:&mut AppWrapper){
+    aw.run_with_view(client::init);
 }
