@@ -7,6 +7,8 @@
 #ifndef Bridge_h
 #define Bridge_h
 
+#include <stdint.h>
+
 void start_app();
 struct wgpu_canvas;
 
