@@ -2,6 +2,7 @@ use ambient_app::AppWrapper;
 use mobile_entry_point::mobile_entry_point;
 use winit::{event_loop::EventLoopBuilder, window::{Window, WindowBuilder}};
 use ambient::{self, client::{self, init}};
+use ambient_app::ffi::IOSViewObj;
 // #[mobile_entry_point]
 // pub extern "C" fn main() {
 //     // let event_loop = EventLoopBuilder::new().build();
