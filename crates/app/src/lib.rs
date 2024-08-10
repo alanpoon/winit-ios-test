@@ -116,6 +116,6 @@ pub fn new_ios(obj:ambient_app::ffi::IOSViewObj)->AppWrapper{
 
 }
 #[cfg(target_os="ios")]
-pub fn run_with_view(aw:AppWrapper){
+pub fn run_with_view(aw:&mut AppWrapper){
     aw.run_with_view(client::init);
 }
