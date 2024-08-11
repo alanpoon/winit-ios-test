@@ -16,12 +16,12 @@ class ViewController: UIViewController, WKNavigationDelegate {
     }()
     override func loadView() {
         print("loadView")
-        // let webViewConfiguration = WKWebViewConfiguration()
-        // let schemeHandler = CustomSchemeHandler2()
-        // webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
-        // URLProtocol.registerClass(CustomSchemeHandler.self)
-        // webView.navigationDelegate = self
-        // view = webView
+         let webViewConfiguration = WKWebViewConfiguration()
+         //let schemeHandler = CustomSchemeHandler2()
+         webView = WKWebView(frame: .zero, configuration: webViewConfiguration)
+         //URLProtocol.registerClass(CustomSchemeHandler.self)
+         webView.navigationDelegate = self
+         view = webView
     }
 
     override func viewDidLoad() {
